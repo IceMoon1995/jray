@@ -3,7 +3,9 @@ package BugCheck
 import (
 	"fmt"
 	"jray/addon/BugCheck/Common"
+	_ "jray/addon/BugCheck/Scanners/PerFile/JS"
 	_ "jray/addon/BugCheck/Scanners/PerFile/Java"
+
 	_ "jray/addon/BugCheck/Scanners/PerFolder"
 	_ "jray/addon/BugCheck/Scanners/PerServer"
 
@@ -68,13 +70,43 @@ func (bugCheck *BugCheckAddon) CheckPerFileRun(flow2 flow.Flow) {
 	response := Common.Response{}
 	response.Header = flow2.Response.Header
 	response.Body = flow2.Response.Body
-	for _, scan2 := range Common.BugScanListPerFile {
-		scan := scan2
-		request2 := request
-		response2 := response
-		bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
-		bugCheck.Counter.AllNum++
+
+	if strings.HasSuffix(request.URL.EscapedPath(), ".js") || strings.HasSuffix(request.URL.EscapedPath(), ".map") {
+		for _, scan2 := range Common.BugScanListPerFileJs {
+			scan := scan2
+			request2 := request
+			response2 := response
+			bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+			bugCheck.Counter.AllNum++
+		}
+	} else {
+		for _, scan2 := range Common.BugScanListPerFile {
+			scan := scan2
+			request2 := request
+			response2 := response
+			if strings.HasSuffix(request.URL.EscapedPath(), ".action") || strings.HasSuffix(request.URL.EscapedPath(), ".jsp") || strings.HasSuffix(request.URL.EscapedPath(), ".jspx") {
+				if scan.GetLtype() == "" || scan.GetLtype() == "JAVA" {
+					bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+					bugCheck.Counter.AllNum++
+				}
+			} else if strings.HasSuffix(request.URL.EscapedPath(), ".asp") || strings.HasSuffix(request.URL.EscapedPath(), ".aspx") {
+				if scan.GetLtype() == "" || scan.GetLtype() == "ASP" {
+					bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+					bugCheck.Counter.AllNum++
+				}
+			} else if strings.HasSuffix(request.URL.EscapedPath(), ".php") {
+				if scan.GetLtype() == "" || scan.GetLtype() == "PHP" {
+					bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+					bugCheck.Counter.AllNum++
+				}
+			} else {
+				bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+				bugCheck.Counter.AllNum++
+			}
+
+		}
 	}
+
 	return
 }
 func (bugCheck *BugCheckAddon) CheckPerFolderRun(flow2 flow.Flow) {
@@ -178,6 +210,42 @@ func (bugCheck *BugCheckAddon) CheckRun() {
 	for true {
 		if len(bugCheck.CheckListWait) > 0 {
 			request := bugCheck.CheckListWait[0]
+			ends_with := []string{".png", ".jpg", ".gif", ".css", ".woff", ".zip", ".rar", ".7z", ".pdf", ".vue",
+				".jpeg", ".class", ".ico", ".png", ".bmp",
+				".woff",
+				".woff2",
+				".ttf",
+				".otf",
+				".ttc",
+				".svg",
+				".psd",
+				".exe",
+				".msi",
+				".tar",
+				".gz",
+				".mp3",
+				".mp4",
+				".mkv",
+				".swf",
+				".xls",
+				".xlsx",
+				".doc",
+				".docx",
+				".ppt",
+				".pptx",
+				".iso"}
+			isSourceFile := false
+			for _, end := range ends_with {
+				if strings.HasSuffix(request.URL.EscapedPath(), end) {
+					isSourceFile = true
+					break
+				}
+			}
+			if isSourceFile {
+				bugCheck.CheckListWait = bugCheck.CheckListWait[1:]
+				continue
+			}
+
 			bugCheck.CheckPerFileRun(request)
 			bugCheck.CheckPerFolderRun(request)
 			bugCheck.CheckPerServerRun(request)

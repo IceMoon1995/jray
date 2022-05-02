@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	Common.AddBugScanListPerFile(Spring4ShellScan{Common.PluginBase{Name: "Spring4ShellScan", Desc: "SpringMVC框架在JDK9及以上版本存在rce漏洞（CVE-2022-22965）,此poc只是检测可能存在漏洞的点，是否真实存在漏洞需要手工验证", Type: "RCE", Level: 2, TimeOut: 3}})
+	Common.AddBugScanListPerFile(Spring4ShellScan{Common.PluginBase{Name: "Spring4ShellScan", Desc: "SpringMVC框架在JDK9及以上版本存在rce漏洞（CVE-2022-22965）,此poc只是检测可能存在漏洞的点，是否真实存在漏洞需要手工验证", Type: "RCE", Level: 2, TimeOut: 3, Ltype: "JAVA"}})
 }
 
 type Spring4ShellScan struct {

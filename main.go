@@ -21,10 +21,10 @@ import (
 
 func loadConfig() {
 	flag.BoolVar(&common.Version, "version", false, "show version")
-	flag.StringVar(&common.Addr, "addr", ":9080", "proxy listen addr")
-	flag.StringVar(&common.WebAddr, "web_addr", ":9081", "web interface listen addr")
+	flag.StringVar(&common.Addr, "addr", "9080", "proxy listen addr")
+	flag.StringVar(&common.WebAddr, "waddr", "9081", "web interface listen addr")
 	flag.BoolVar(&common.Ssl_insecure, "ssl_insecure", true, "not verify upstream server SSL/TLS certificates.")
-	flag.StringVar(&common.Dump, "dump", "testmitm.txt", "dump filename")
+	flag.StringVar(&common.Dump, "dump", "jweb.txt", "dump filename")
 	flag.IntVar(&common.DumpLevel, "dump_level", 1, "dump level: 0 - header, 1 - header + body")
 	flag.StringVar(&common.MapperDir, "mapper_dir", "", "mapper files dirpath")
 	flag.StringVar(&common.CertPath, "cert_path", "", "path of generate cert files")
@@ -37,6 +37,8 @@ func loadConfig() {
 
 func main() {
 	loadConfig()
+	common.Addr = ":" + common.Addr
+	common.WebAddr = ":" + common.WebAddr
 
 	log.SetLevel(log.PanicLevel)
 	log.SetReportCaller(false)

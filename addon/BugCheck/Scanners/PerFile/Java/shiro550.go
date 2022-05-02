@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	Common.AddBugScanListPerFile(Shiro550Scan{Common.PluginBase{Name: "Shiro", Desc: "发现shiro框架，可利用shiro框架进行反序列化，执行系统命令", Type: "RCE", Level: 2, TimeOut: 3}, 0, 5, &[]string{}, &sync.Mutex{}})
+	Common.AddBugScanListPerFile(Shiro550Scan{Common.PluginBase{Name: "Shiro", Desc: "发现shiro框架，可利用shiro框架进行反序列化，执行系统命令", Type: "RCE", Level: 2, TimeOut: 3, Ltype: "JAVA"}, 0, 5, &[]string{}, &sync.Mutex{}})
 }
 
 type Shiro550Scan struct {

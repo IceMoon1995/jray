@@ -12,6 +12,7 @@ import (
 var BugScanListPerFile = []PluginBaseFun{}
 var BugScanListPerFolder = []PluginBaseFun{}
 var BugScanListPerFServer = []PluginBaseFun{}
+var BugScanListPerFileJs = []PluginBaseFun{}
 
 var Log4j = log.New(io.Discard, "logger:", log.Lshortfile)
 
@@ -28,6 +29,10 @@ type Request struct {
 
 func AddBugScanListPerFile(f PluginBaseFun) {
 	BugScanListPerFile = append(BugScanListPerFile, f)
+}
+
+func AddBugScanListPerFileJs(f PluginBaseFun) {
+	BugScanListPerFileJs = append(BugScanListPerFileJs, f)
 }
 func AddBugScanListPerFolder(f PluginBaseFun) {
 	BugScanListPerFolder = append(BugScanListPerFolder, f)
