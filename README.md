@@ -6,9 +6,9 @@
 
 缝合怪导致框架架构不是很好，但是重复造轮子的话导致工作量大幅度提升，还是随便写写吧
 
-参考w13scan被动扫描器[https://github.com/w-digital-scanner/w13scan]，本来是改了好多w13scan的代码，但是过程中发现python不是很好，效率比较低，某些情况下丢包非常严重。
+参考w13scan被动扫描器[https://github.com/w-digital-scanner/w13scan] ，本来是改了好多w13scan的代码，但是过程中发现python不是很好，效率比较低，某些情况下丢包非常严重。
 
-代理模块使用go-mitmproxy[https://github.com/lqqyt2423/go-mitmproxy] ,去除了项目有一部分remote error等影响软件正常使用的报错的提示。
+代理模块使用go-mitmproxy[https://github.com/lqqyt2423/go-mitmproxy] ，去除了项目有一部分remote error等影响软件正常使用的报错的提示。
 
 poc扫描插件主要使用fscan[https://github.com/shadow1ng/fscan] 修改版本，xray的yml脚本，以及自己编写的部分插件。
 
