@@ -20,7 +20,10 @@ poc扫描插件主要使用fscan[https://github.com/shadow1ng/fscan] 修改版�
 
 ## 使用方式
 
-fray.exe 默认监听9080端口，9081端口（web界面）
+jray.exe 
+
+
+默认监听9080端口，9081端口（web界面）
 
 ## 参数说明
 ```
@@ -40,8 +43,6 @@ fray.exe 默认监听9080端口，9081端口（web界面）
       指定MITM仿造的证书存储位置
 -o filename
       指定漏洞输出地址
-
-
 ```
 
 
