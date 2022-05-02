@@ -24,9 +24,9 @@ func (c *ChangeHtml) Response(f *flow.Flow) {
 		return
 	}
 
-	// change html <title> end with: " - go-mitmproxy"
+	// change html <title> end with: " - jary"
 	f.Response.ReplaceToDecodedBody()
-	f.Response.Body = titleRegexp.ReplaceAll(f.Response.Body, []byte("${1}${2} - go-mitmproxy${3}"))
+	f.Response.Body = titleRegexp.ReplaceAll(f.Response.Body, []byte("${1}${2} - jary${3}"))
 	f.Response.Header.Set("Content-Length", strconv.Itoa(len(f.Response.Body)))
 }
 

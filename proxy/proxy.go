@@ -3,15 +3,15 @@ package proxy
 import (
 	"bytes"
 	"crypto/tls"
-	"jray/addon/BugCheck/Common"
 	"io"
+	"jray/addon/BugCheck/Common"
 	"net"
 	"net/http"
 	"time"
 
+	_log "github.com/sirupsen/logrus"
 	"jray/addon"
 	"jray/flow"
-	_log "github.com/sirupsen/logrus"
 )
 
 var log = _log.WithField("at", "proxy")
@@ -34,7 +34,7 @@ type Proxy struct {
 
 func NewProxy(opts *Options) (*Proxy, error) {
 	proxy := new(Proxy)
-	proxy.Version = "0.1.9"
+	proxy.Version = "0.0.1"
 
 	proxy.Server = &http.Server{
 		Addr:        opts.Addr,

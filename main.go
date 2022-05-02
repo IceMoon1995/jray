@@ -61,11 +61,11 @@ func main() {
 	}
 
 	if common.Version {
-		fmt.Println("go-mitmproxy: " + p.Version)
+		fmt.Println("jary: " + p.Version)
 		os.Exit(0)
 	}
 
-	log.Error("go-mitmproxy version %v\n", p.Version)
+	log.Error("jary version %v\n", p.Version)
 
 	p.AddAddon(&addon.Log{})
 	bugCheck := BugCheck.BugCheckAddon{WorkerCount: common.ScanThreads, Mutex: &sync.Mutex{}, TaskChan: make(chan BugCheck.ChekStruts, 10000)}
