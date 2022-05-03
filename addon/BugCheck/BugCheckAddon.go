@@ -3,9 +3,9 @@ package BugCheck
 import (
 	"fmt"
 	"jray/addon/BugCheck/Common"
+	_ "jray/addon/BugCheck/Scanners/PerFile"
 	_ "jray/addon/BugCheck/Scanners/PerFile/JS"
 	_ "jray/addon/BugCheck/Scanners/PerFile/Java"
-
 	_ "jray/addon/BugCheck/Scanners/PerFolder"
 	_ "jray/addon/BugCheck/Scanners/PerServer"
 
