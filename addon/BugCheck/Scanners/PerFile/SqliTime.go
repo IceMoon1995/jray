@@ -11,20 +11,19 @@ import (
 	"time"
 )
 
-var checkSql map[string][]string
+var checkSleepSql map[string][]string
 
 func init() {
-	sqliSleepScan := SqliSleepScan{Common.PluginBase{Name: "Sql注入时间盲注", Desc: "存在Sql注入时间盲注", Type: "SQL注入", Ltype: "", TimeOut: 25},
+	sqliSleepScan := SqliSleepScan{Common.PluginBase{Name: "Sql注入时间盲注", Desc: "存在Sql注入时间盲注", Type: "SQL注入", Ltype: "", TimeOut: 25, Level: 5},
 		3, 3, &sync.Mutex{}}
 	Common.AddBugScanListPerFile(sqliSleepScan)
 	ct := time.Now() //代表当前时间的time对象
 	ts := ct.Unix()  //unix时间戳
-	fmt.Println(ts)
 	//利用时间戳设置rand的种子数
 	rand.Seed(ts)
 	r1 := rand.Intn(5)
 
-	checkSql = map[string][]string{
+	checkSleepSql = map[string][]string{
 		"MySql": []string{fmt.Sprintf(" AND SLEEP(%d)", sqliSleepScan.SleepTimeOut),
 			fmt.Sprintf(" AND SLEEP(%d)--+", sqliSleepScan.SleepTimeOut),
 			fmt.Sprintf("' AND SLEEP(%d)", sqliSleepScan.SleepTimeOut),
@@ -64,7 +63,7 @@ func (p SqliSleepScan) Exec(p1 Common.PluginBaseFun, request Common.Request, res
 }
 func (p SqliSleepScan) Audit() {
 
-	for k, v := range checkSql {
+	for k, v := range checkSleepSql {
 		for _, sql := range v {
 
 			if p.Request.Method == "GET" && p.Request.URL.RawQuery != "" {

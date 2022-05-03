@@ -70,6 +70,7 @@ func (bugCheck *BugCheckAddon) CheckPerFileRun(flow2 flow.Flow) {
 	response := Common.Response{}
 	response.Header = flow2.Response.Header
 	response.Body = flow2.Response.Body
+	response.StatusCode = flow2.Response.StatusCode
 
 	if strings.HasSuffix(request.URL.EscapedPath(), ".js") || strings.HasSuffix(request.URL.EscapedPath(), ".map") {
 		for _, scan2 := range Common.BugScanListPerFileJs {
@@ -120,6 +121,8 @@ func (bugCheck *BugCheckAddon) CheckPerFolderRun(flow2 flow.Flow) {
 	response := Common.Response{}
 	response.Header = flow2.Response.Header
 	response.Body = flow2.Response.Body
+	response.StatusCode = flow2.Response.StatusCode
+
 	request.URL = *flow2.Request.URL
 	request.CheckUrl = *flow2.Request.URL
 	folderes := strings.Split(request.CheckUrl.Path, "/")
@@ -176,6 +179,8 @@ func (bugCheck *BugCheckAddon) CheckPerServerRun(flow2 flow.Flow) {
 	response := Common.Response{}
 	response.Header = flow2.Response.Header
 	response.Body = flow2.Response.Body
+	response.StatusCode = flow2.Response.StatusCode
+
 	for _, scan2 := range Common.BugScanListPerFServer {
 		scan := scan2
 		request2 := request
