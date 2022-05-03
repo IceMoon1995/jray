@@ -31,6 +31,7 @@ func loadConfig() {
 	flag.BoolVar(&common.IsSave, "nosave", true, "是否保存扫描结果")
 	flag.StringVar(&common.Outputfile, "o", "result_vul.txt", "扫描结果保存的文件名")
 	flag.IntVar(&common.ScanThreads, "t", 16, "扫描并发数")
+	flag.StringVar(&common.Proxy, "proxy", "", "上层代理设置 -proxy http://127.0.0.1:8887")
 
 	flag.Parse()
 }

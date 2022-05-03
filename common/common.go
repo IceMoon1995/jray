@@ -31,6 +31,7 @@ var LogErrTime int64
 var WaitTime int64
 var Silent bool
 var LogWG sync.WaitGroup
+var Proxy string
 
 func init() {
 	go SaveLog()

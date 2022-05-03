@@ -5,8 +5,10 @@ import (
 	"crypto/tls"
 	"io"
 	"jray/addon/BugCheck/Common"
+	"jray/common"
 	"net"
 	"net/http"
+	"net/url"
 	"time"
 
 	_log "github.com/sirupsen/logrus"
@@ -32,6 +34,16 @@ type Proxy struct {
 	Addons            []addon.Addon
 }
 
+func GetProxy(req *http.Request) (*url.URL, error) {
+	if common.Proxy != "" {
+		urll, err := url.Parse(common.Proxy)
+		if err == nil {
+			return urll, nil
+		}
+	}
+	return http.ProxyFromEnvironment(req)
+}
+
 func NewProxy(opts *Options) (*Proxy, error) {
 	proxy := new(Proxy)
 	proxy.Version = "0.0.1"
@@ -45,7 +57,7 @@ func NewProxy(opts *Options) (*Proxy, error) {
 
 	proxy.Client = &http.Client{
 		Transport: &http.Transport{
-			Proxy: http.ProxyFromEnvironment,
+			Proxy: GetProxy,
 			DialContext: (&net.Dialer{
 				Timeout:   15 * time.Second,
 				KeepAlive: 30 * time.Second,
