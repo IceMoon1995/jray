@@ -1,6 +1,6 @@
 # jray
 
-一款弱小的被动扫描安全评估工具，目前不支持主动扫描哦！！！   ps:开发目的主要是弥补xray子目录扫描不充分的缺点！-proxy [xray监听地址] 效果更佳
+一款弱小的被动扫描安全评估工具，目前不支持主动扫描哦！！！   ps:开发目的主要是弥补xray子目录扫描不充分的缺点！-proxy [xray监听地址] 串联打击，效果更佳。
 
 由于开始编写时，对go语言不熟悉，导致挖了很多坑，慢慢填吧
 
@@ -8,7 +8,7 @@
 
 参考w13scan被动扫描器[https://github.com/w-digital-scanner/w13scan] ，本来是改了好多w13scan的代码，但是过程中发现python不是很好，效率比较低，某些情况下丢包非常严重。
 
-代理模块使用go-mitmproxy[https://github.com/lqqyt2423/go-mitmproxy] ，修改了项目内一部分remote error等影响软件正常使用的报错的提示，预计新增二级代理。
+代理模块使用go-mitmproxy[https://github.com/lqqyt2423/go-mitmproxy] ，修改了项目内一部分remote error等影响软件正常使用的报错的提示，新增二级代理功能，支持串联打击。
 
 poc扫描插件主要使用fscan[https://github.com/shadow1ng/fscan] 修改版本，xray的yml脚本，以及自己编写的部分插件。
 
