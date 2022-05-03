@@ -57,26 +57,27 @@ func SimilarText(first, second string, percent *float64) int {
 
 var sqlBoolPayload []string
 
-func init() {
-	sqliBoolScan := SqliBoolScan{Common.PluginBase{Name: "Sql注入Bool盲注", Desc: "存在Sql注入Bool盲注", Type: "SQL注入", Ltype: "", TimeOut: 5, Level: 5},
-		3, &sync.Mutex{}}
-	Common.AddBugScanListPerFile(sqliBoolScan)
-	sqlBoolPayload = []string{
-		//"<--isdigit-->",
-		"/**/and %d=%d",
-		"/**/and+%d=%d",
-		"/**/and '%d'='%d",
-		"' and'%d'='%d",
-		"\" and\"%d\"=\"%d",
-		" and '%d'='%d-- ",
-		"' and '%d'='%d-- ",
-		"\" and '%d'='%d-- ",
-		") and '%d'='%d-- ",
-		"') and '%d'='%d-- ",
-		"\") and '%d'='%d-- ",
-	}
-
-}
+//实现存在缺陷 暂时不支持注入
+//func init() {
+//	sqliBoolScan := SqliBoolScan{Common.PluginBase{Name: "Sql注入Bool盲注", Desc: "存在Sql注入Bool盲注", Type: "SQL注入", Ltype: "", TimeOut: 5, Level: 5},
+//		3, &sync.Mutex{}}
+//	Common.AddBugScanListPerFile(sqliBoolScan)
+//	sqlBoolPayload = []string{
+//		//"<--isdigit-->",
+//		"/**/and %d=%d",
+//		"/**/and+%d=%d",
+//		"/**/and '%d'='%d",
+//		"' and'%d'='%d",
+//		"\" and\"%d\"=\"%d",
+//		" and '%d'='%d-- ",
+//		"' and '%d'='%d-- ",
+//		"\" and '%d'='%d-- ",
+//		") and '%d'='%d-- ",
+//		"') and '%d'='%d-- ",
+//		"\") and '%d'='%d-- ",
+//	}
+//
+//}
 
 type SqliBoolScan struct {
 	Common.PluginBase

