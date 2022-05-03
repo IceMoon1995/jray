@@ -8,7 +8,7 @@
 
 参考w13scan被动扫描器[https://github.com/w-digital-scanner/w13scan] ，本来是改了好多w13scan的代码，但是过程中发现python不是很好，效率比较低，某些情况下丢包非常严重。
 
-代理模块使用jary[https://github.com/lqqyt2423/jary] ，修改了项目内一部分remote error等影响软件正常使用的报错的提示。
+代理模块使用go-mitmproxy[https://github.com/lqqyt2423/go-mitmproxy] ，修改了项目内一部分remote error等影响软件正常使用的报错的提示，预计新增二级代理。
 
 poc扫描插件主要使用fscan[https://github.com/shadow1ng/fscan] 修改版本，xray的yml脚本，以及自己编写的部分插件。
 
