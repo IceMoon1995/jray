@@ -9,6 +9,14 @@ import (
 	"time"
 )
 
+var IsUseReverse bool
+
+var UseReverseType string
+
+var ReverseDomain string
+
+var ReverseCheckDomain string
+
 var ScanThreads int
 
 var Version bool

@@ -11,7 +11,7 @@ type PluginBase struct {
 	Response Response
 	TimeOut  float32
 	Ltype    string //语言类型，JAVA PHP ASP 等 用于漏洞检测分裂
-
+	//UseReverse bool
 }
 
 type PluginBaseFun interface {
@@ -20,6 +20,15 @@ type PluginBaseFun interface {
 	Audit()
 	Exec(p1 PluginBaseFun, request Request, response Response)
 	Success(name string, url string, Type string, detail string, result string)
+	CheckReverse() bool
+	GetReverseType() string
+}
+
+func (p PluginBase) GetReverseType() string {
+	return common.UseReverseType
+}
+func (p PluginBase) CheckReverse() bool {
+	return common.IsUseReverse
 }
 
 func (p PluginBase) Audit() {

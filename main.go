@@ -32,8 +32,19 @@ func loadConfig() {
 	flag.StringVar(&common.Outputfile, "o", "result_vul.txt", "扫描结果保存的文件名")
 	flag.IntVar(&common.ScanThreads, "t", 16, "扫描并发数")
 	flag.StringVar(&common.Proxy, "proxy", "", "上层代理设置 -proxy http://127.0.0.1:8887")
+	flag.BoolVar(&common.IsUseReverse, "re", false, "是否启用反连平台")
+	flag.StringVar(&common.UseReverseType, "ret", "ldap", "反连平台类型:DnsLog,ldap,rmi")
+	flag.StringVar(&common.ReverseDomain, "reDomian", "127.0.0.1:1389", "反连平台地址")
+	flag.StringVar(&common.ReverseCheckDomain, "reCDomain", "http://127.0.0.1:8080", "反连平台检测验证地址")
 
 	flag.Parse()
+
+	if common.IsUseReverse {
+		reverse := Common.ReverseMap[common.UseReverseType]
+		reverse.ReverseDomain = common.ReverseDomain
+		reverse.ReverseCheckDomain = common.ReverseCheckDomain + "/%s.md5"
+		Common.ReverseMap[common.UseReverseType] = reverse
+	}
 }
 
 func main() {

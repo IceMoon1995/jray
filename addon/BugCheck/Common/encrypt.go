@@ -4,13 +4,20 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/md5"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/hex"
 	"io"
 
 	uuid "github.com/satori/go.uuid"
 )
 
+func Md5(str string) string {
+	h := md5.New()
+	h.Write([]byte(str))
+	return hex.EncodeToString(h.Sum(nil))
+}
 func Padding(plainText []byte, blockSize int) []byte {
 	//计算要填充的长度
 	n := (blockSize - len(plainText)%blockSize)

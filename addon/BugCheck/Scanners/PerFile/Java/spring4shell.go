@@ -46,7 +46,7 @@ func (p Spring4ShellScan) Audit() {
 				break
 			}
 
-		}
+		}else
 		if p.Request.Method != "GET" && len(p.Request.Body) > 0 {
 
 			contentType := p.Request.Header.Get("Content-Type")
