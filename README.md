@@ -27,6 +27,12 @@ jray.exe
 jray.exe -proxy http://127.0.0.1:8080
 执行多级代理，搭配xray，效果更佳哦！
 
+## 功能
+1、设置二级代理，串联打击
+2、http/https mitm中间人攻击，全流量保存
+3、插件化，支持自定义扫描插件（BugCheckAddon-漏洞扫描插件,addon-mitm其他插件均可）
+4、BugCheckAddon：目前支持文件扫描，多级目录扫描，js敏感信息探测，其他子目录相关信息泄露探测
+
 
 ## 参数说明
 ```
