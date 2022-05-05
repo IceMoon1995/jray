@@ -46,8 +46,7 @@ func (p Spring4ShellScan) Audit() {
 				break
 			}
 
-		}else
-		if p.Request.Method != "GET" && len(p.Request.Body) > 0 {
+		} else if p.Request.Method != "GET" && len(p.Request.Body) > 0 {
 
 			contentType := p.Request.Header.Get("Content-Type")
 			result2 := Ghttp.Analyze(p.Request.URL.String(), p.Request.Method, string(p.Request.Body), p.Request.Header, p.TimeOut)
@@ -86,7 +85,7 @@ func (p Spring4ShellScan) Audit() {
 							p.Success(p.Name, p.Request.CheckUrl.String(), p.Type, p.Desc, "")
 							return
 						}
-						break
+
 					case int:
 					case float64:
 					case []interface{}:

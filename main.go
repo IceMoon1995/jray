@@ -36,7 +36,6 @@ func loadConfig() {
 	flag.StringVar(&common.UseReverseType, "ret", "ldap", "反连平台类型:DnsLog,ldap,rmi")
 	flag.StringVar(&common.ReverseDomain, "reDomian", "127.0.0.1:1389", "反连平台地址")
 	flag.StringVar(&common.ReverseCheckDomain, "reCDomain", "http://127.0.0.1:8080", "反连平台检测验证地址")
-
 	flag.Parse()
 
 	if common.IsUseReverse {

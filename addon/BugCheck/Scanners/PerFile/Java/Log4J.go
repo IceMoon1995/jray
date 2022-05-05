@@ -22,7 +22,7 @@ type Log4JScan struct {
 }
 
 func (p Log4JScan) Exec(p1 Common.PluginBaseFun, request Common.Request, response Common.Response) {
-	if p.CheckReverse() {
+	if !p.CheckReverse() {
 		return
 	}
 	p.Request = request
@@ -60,7 +60,7 @@ func (p Log4JScan) Audit() {
 
 	checkLists := []Log4JChekcRsult{}
 
-	if len(p.Request.Body) > 0 || p.Request.URL.RawQuery != "" {
+	if len(p.Request.Body) > 0 || p.Request.URL.RawQuery != "" || p.Request.Header != nil {
 
 		rType := p.GetReverseType()
 		if _, ok := checkPayloads[rType]; !ok {
@@ -79,7 +79,6 @@ func (p Log4JScan) Audit() {
 					r1 := Common.RandStr(16)
 					r2 := Common.Md5(r1 + p.Request.CheckUrl.String())
 					main_payload := fmt.Sprintf(payload, reverse.ReverseDomain, r2)
-
 					requestVuls.Set(k1, main_payload)
 					p.Request.CheckUrl.RawQuery = requestVuls.Encode()
 					result := Ghttp.Analyze(p.Request.CheckUrl.String(), "GET", "", p.Request.Header, p.TimeOut)
@@ -93,7 +92,6 @@ func (p Log4JScan) Audit() {
 						}
 					}
 					requestVuls.Set(k1, v1)
-					break
 				}
 
 			} else if p.Request.Method != "GET" && len(p.Request.Body) > 0 {
@@ -101,7 +99,6 @@ func (p Log4JScan) Audit() {
 				if strings.Contains(contentType, "application/x-www-form-urlencoded") || !strings.Contains(contentType, "application/json") {
 					p.Request.CheckUrl.RawQuery = string(p.Request.Body)
 					requestVuls := p.Request.CheckUrl.Query()
-
 					for k1, _ := range requestVuls {
 						v1 := requestVuls.Get(k1)
 						r1 := Common.RandStr(16)
@@ -119,9 +116,7 @@ func (p Log4JScan) Audit() {
 								return
 							}
 						}
-
 						requestVuls.Set(k1, v1)
-						break
 					}
 
 				} else if strings.Contains(contentType, "application/json") {
@@ -151,7 +146,7 @@ func (p Log4JScan) Audit() {
 									return
 								}
 							}
-							break
+
 						case int:
 						case float64:
 						case []interface{}:
@@ -159,6 +154,34 @@ func (p Log4JScan) Audit() {
 						}
 					}
 				}
+			}
+
+			if p.Request.Header != nil {
+				requestHeaders := p.Request.Header
+				for k1, _ := range requestHeaders {
+					println(k1)
+					if k1 == "" || k1 == "Accept-Encoding" || k1 == "Upgrade-Insecure-Requests" || k1 == "Proxy-Connection" || k1 == "Accept-Language" || k1 == "Cache-Control" {
+						continue
+					}
+
+					v1 := requestHeaders.Get(k1)
+					r1 := Common.RandStr(16)
+					r2 := Common.Md5(r1 + p.Request.CheckUrl.String())
+					main_payload := fmt.Sprintf(payload, reverse.ReverseDomain, r2)
+					requestHeaders.Set(k1, main_payload)
+					result := Ghttp.Analyze(p.Request.URL.String(), "GET", "", requestHeaders, p.TimeOut)
+					log4JChekcRsult := Log4JChekcRsult{Param: k1, Url: p.Request.URL.String(), CheckId: r2, CheckCount: 0}
+					checkLists = append(checkLists, log4JChekcRsult)
+					if result.StatusCode > 0 {
+						checkResult, isSuccess := p.CheckLog(checkLists, &reverse)
+						if isSuccess {
+							p.Success(p.Name, p.Request.CheckUrl.String(), p.Type, p.Desc, checkResult.Param)
+							return
+						}
+					}
+					requestHeaders.Set(k1, v1)
+				}
+
 			}
 
 		}
