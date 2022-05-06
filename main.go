@@ -39,10 +39,24 @@ func loadConfig() {
 	flag.Parse()
 
 	if common.IsUseReverse {
-		reverse := Common.ReverseMap[common.UseReverseType]
-		reverse.ReverseDomain = common.ReverseDomain
-		reverse.ReverseCheckDomain = common.ReverseCheckDomain + "/%s.md5"
-		Common.ReverseMap[common.UseReverseType] = reverse
+		if common.UseReverseType == "ldap" {
+			reverse := Common.ReverseMap[common.UseReverseType]
+			reverse.ReverseDomain = common.ReverseDomain
+			reverse.ReverseCheckDomain = common.ReverseCheckDomain + "/%s.md5"
+			Common.ReverseMap[common.UseReverseType] = reverse
+		} else if common.UseReverseType == "dig" {
+			digresult := Common.GetDNSLog_Platform_Golang("https://dig.pm")
+			if digresult == nil {
+				common.IsUseReverse = false
+				println("dig平台未成功连接")
+			} else {
+				reverse := Common.ReverseMap[common.UseReverseType]
+				reverse.ReverseDomain = digresult["domain"]
+				reverse.DigToken = digresult["token"]
+				reverse.DigKey = digresult["key"]
+			}
+		}
+
 	}
 }
 
