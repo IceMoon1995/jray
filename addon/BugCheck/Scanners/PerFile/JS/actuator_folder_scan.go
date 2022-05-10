@@ -14,7 +14,7 @@ type RegexpStruct struct {
 var regxs = []RegexpStruct{}
 
 func init() {
-	Common.AddBugScanListPerFileJs(JsSensitiveContentScan{Common.PluginBase{Name: "js文件敏感内容匹配", Desc: "从返回js的包中匹配敏感内容", Type: "信息泄露", Ltype: "JS"}})
+	Common.AddBugScanListPerFileJs(JsSensitiveContentScan{Common.PluginBase{Name: "js文件敏感内容匹配", Desc: "从返回js的包中匹配敏感内容", Type: "信息泄露", Ltype: "JS", Level: 1}})
 
 	regx := map[string]string{
 		//# "邮箱信息": r'[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9_-]+)+',
@@ -29,6 +29,7 @@ func init() {
 		"手机号":             "(?:139|138|137|136|135|134|147|150|151|152|157|158|159|178|182|183|184|187|188|198|130|131|132|155|156|166|185|186|145|175|176|133|153|177|173|180|181|189|170|171)[0-9]{8}",
 		//# "域名泄露": r"((?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+(?:biz|cc|club|cn|com|co|edu|fun|group|info|ink|kim|link|live|ltd|mobi|net|online|org|pro|pub|red|ren|shop|site|store|tech|top|tv|vip|wang|wiki|work|xin|xyz|me))",
 		"Access Key":           "access_key.*?[\"\\'](.*?)[\"\\']",
+		"Access Key ID 3":      "[A|a]ccess[K|k]ey[I|i]d|[A|a]ccess[K|k]ey[S|s]ecret",
 		"Access Key ID 1":      "accesskeyid.*?[\"\\\"](.*?)[\"\\']",
 		"Access Key ID 2":      "accesskeyid.*?[\"\\'](.*?)[\"\\']",
 		"Bearer":               "bearer [a-zA-Z0-9_\\-\\.=:_\\+\\/]{5,100}",
@@ -41,6 +42,8 @@ func init() {
 		"DSA密钥":                "-----BEGIN DSA PRIVATE KEY-----",
 		"Stripe账号泄露 1":         "rk_live_[0-9a-zA-Z]{24}",
 		"Stripe账号泄露 2":         "sk_live_[0-9a-zA-Z]{24}",
+		"下载接口泄露":               "\"[a-zA-Z0-9/]*[/]{1}[a-zA-Z0-9_-]*[d|D]{1}ownload[a-zA-Z0-9_-]*\"",
+		"上传接口泄露":               "[\"[a-zA-Z0-9/]*[/]{1}[a-zA-Z0-9_-]*[u|U]{1}pload[a-zA-Z0-9_-]*\"",
 	}
 	for k, v := range regx {
 		patternCompiled, err := regexp.Compile(v)

@@ -2,6 +2,8 @@ package BugCheck
 
 import (
 	"fmt"
+	"jray/common"
+
 	"jray/addon/BugCheck/Common"
 	_ "jray/addon/BugCheck/Scanners/PerFile"
 	_ "jray/addon/BugCheck/Scanners/PerFile/JS"
@@ -75,36 +77,39 @@ func (bugCheck *BugCheckAddon) CheckPerFileRun(flow2 flow.Flow) {
 	if strings.HasSuffix(request.URL.EscapedPath(), ".js") || strings.HasSuffix(request.URL.EscapedPath(), ".map") {
 		for _, scan2 := range Common.BugScanListPerFileJs {
 			scan := scan2
-			request2 := request
-			response2 := response
-			bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
-			bugCheck.Counter.AllNum++
+			if scan.GetLevel() <= common.CheckLevel {
+				request2 := request
+				response2 := response
+				bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+				bugCheck.Counter.AllNum++
+			}
 		}
 	} else {
 		for _, scan2 := range Common.BugScanListPerFile {
 			scan := scan2
-			request2 := request
-			response2 := response
-			if strings.HasSuffix(request.URL.EscapedPath(), ".action") || strings.HasSuffix(request.URL.EscapedPath(), ".jsp") || strings.HasSuffix(request.URL.EscapedPath(), ".jspx") {
-				if scan.GetLtype() == "" || scan.GetLtype() == "JAVA" {
+			if scan.GetLevel() <= common.CheckLevel {
+				request2 := request
+				response2 := response
+				if strings.HasSuffix(request.URL.EscapedPath(), ".action") || strings.HasSuffix(request.URL.EscapedPath(), ".jsp") || strings.HasSuffix(request.URL.EscapedPath(), ".jspx") {
+					if scan.GetLtype() == "" || scan.GetLtype() == "JAVA" {
+						bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+						bugCheck.Counter.AllNum++
+					}
+				} else if strings.HasSuffix(request.URL.EscapedPath(), ".asp") || strings.HasSuffix(request.URL.EscapedPath(), ".aspx") {
+					if scan.GetLtype() == "" || scan.GetLtype() == "ASP" {
+						bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+						bugCheck.Counter.AllNum++
+					}
+				} else if strings.HasSuffix(request.URL.EscapedPath(), ".php") {
+					if scan.GetLtype() == "" || scan.GetLtype() == "PHP" {
+						bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+						bugCheck.Counter.AllNum++
+					}
+				} else {
 					bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
 					bugCheck.Counter.AllNum++
 				}
-			} else if strings.HasSuffix(request.URL.EscapedPath(), ".asp") || strings.HasSuffix(request.URL.EscapedPath(), ".aspx") {
-				if scan.GetLtype() == "" || scan.GetLtype() == "ASP" {
-					bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
-					bugCheck.Counter.AllNum++
-				}
-			} else if strings.HasSuffix(request.URL.EscapedPath(), ".php") {
-				if scan.GetLtype() == "" || scan.GetLtype() == "PHP" {
-					bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
-					bugCheck.Counter.AllNum++
-				}
-			} else {
-				bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
-				bugCheck.Counter.AllNum++
 			}
-
 		}
 	}
 
@@ -145,11 +150,13 @@ func (bugCheck *BugCheckAddon) CheckPerFolderRun(flow2 flow.Flow) {
 
 		for _, scan2 := range Common.BugScanListPerFolder {
 			scan := scan2
-			request2 := request
-			response2 := response
-			bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
-			bugCheck.Counter.AllNum++
+			if scan.GetLevel() <= common.CheckLevel {
 
+				request2 := request
+				response2 := response
+				bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+				bugCheck.Counter.AllNum++
+			}
 		}
 	}
 	return
@@ -183,10 +190,12 @@ func (bugCheck *BugCheckAddon) CheckPerServerRun(flow2 flow.Flow) {
 
 	for _, scan2 := range Common.BugScanListPerFServer {
 		scan := scan2
-		request2 := request
-		response2 := response
-		bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
-		bugCheck.Counter.AllNum++
+		if scan.GetLevel() <= common.CheckLevel {
+			request2 := request
+			response2 := response
+			bugCheck.TaskChan <- ChekStruts{&scan, &request2, &response2}
+			bugCheck.Counter.AllNum++
+		}
 	}
 	return
 }
@@ -276,7 +285,9 @@ func (bugCheck *BugCheckAddon) Responseheaders(f *flow.Flow) {
 }
 
 func (bugCheck *BugCheckAddon) Response(f *flow.Flow) {
-	bugCheck.CheckListWait = append(bugCheck.CheckListWait, *f)
+	if !common.IsCheck {
+		bugCheck.CheckListWait = append(bugCheck.CheckListWait, *f)
+	}
 	//println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	//println(f.Request.Method)
 	//println(f.Request.URL.Host)

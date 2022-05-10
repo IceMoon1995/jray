@@ -130,7 +130,15 @@ func (p Log4JScan) Audit() {
 						v1 := requestVuls.Get(k1)
 						r1 := Common.RandStr(16)
 						r2 := Common.Md5(r1 + p.Request.CheckUrl.String())
-						main_payload := fmt.Sprintf(payload, reverse.ReverseDomain, r2)
+						main_payload := ""
+						if reverse.ReverseType == "ldap" {
+							main_payload = fmt.Sprintf(payload, reverse.ReverseDomain, r2)
+						} else if reverse.ReverseType == "dig" {
+							main_payload = fmt.Sprintf(payload, r2, reverse.ReverseDomain[:len(reverse.ReverseDomain)-1])
+						} else {
+							return
+						}
+
 						requestVuls.Set(k1, main_payload)
 
 						result := Ghttp.Analyze(p.Request.URL.String(), p.Request.Method, requestVuls.Encode(), p.Request.Header, p.TimeOut)
@@ -159,7 +167,14 @@ func (p Log4JScan) Audit() {
 						case string:
 							r1 := Common.RandStr(16)
 							r2 := Common.Md5(r1 + p.Request.CheckUrl.String())
-							main_payload := fmt.Sprintf(payload, reverse.ReverseDomain, r2)
+							main_payload := ""
+							if reverse.ReverseType == "ldap" {
+								main_payload = fmt.Sprintf(payload, reverse.ReverseDomain, r2)
+							} else if reverse.ReverseType == "dig" {
+								main_payload = fmt.Sprintf(payload, r2, reverse.ReverseDomain[:len(reverse.ReverseDomain)-1])
+							} else {
+								return
+							}
 							m[k] = main_payload
 							bodym, _ := json.Marshal(m)
 							result := Ghttp.Analyze(p.Request.URL.String(), p.Request.Method, string(bodym), p.Request.Header, p.TimeOut)
@@ -186,7 +201,6 @@ func (p Log4JScan) Audit() {
 			if p.Request.Header != nil {
 				requestHeaders := p.Request.Header
 				for k1, _ := range requestHeaders {
-					println(k1)
 					if k1 == "" || k1 == "Accept-Encoding" || k1 == "Upgrade-Insecure-Requests" || k1 == "Proxy-Connection" || k1 == "Accept-Language" || k1 == "Cache-Control" {
 						continue
 					}

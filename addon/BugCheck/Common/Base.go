@@ -17,6 +17,7 @@ type PluginBase struct {
 type PluginBaseFun interface {
 	GetName() string
 	GetLtype() string
+	GetLevel() int
 	Audit()
 	Exec(p1 PluginBaseFun, request Request, response Response)
 	Success(name string, url string, Type string, detail string, result string)
@@ -30,7 +31,9 @@ func (p PluginBase) GetReverseType() string {
 func (p PluginBase) CheckReverse() bool {
 	return common.IsUseReverse
 }
-
+func (p PluginBase) GetLevel() int {
+	return p.Level
+}
 func (p PluginBase) Audit() {
 	println("Audit_A")
 }

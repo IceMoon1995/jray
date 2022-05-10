@@ -15,6 +15,10 @@ var UseReverseType string
 
 var ReverseDomain string
 
+var CheckLevel int
+
+var IsCheck bool
+
 var ReverseCheckDomain string
 
 var ScanThreads int
@@ -69,7 +73,7 @@ func SaveLog() {
 				fmt.Print("\r" + *result + "    \r\n")
 			}
 		}
-		if IsSave {
+		if !IsSave {
 			WriteFile(*result, Outputfile)
 		}
 		LogWG.Done()

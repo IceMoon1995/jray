@@ -25,7 +25,7 @@ func (p ActuatorFolderScan) Audit() {
 	for _, dic := range file_dic {
 		url1 := url + dic
 		result := Ghttp.Analyze(url1, "GET", "", nil, 5)
-		if result.StatusCode == 200 && strings.HasPrefix(result.Body, "{") && strings.HasSuffix(result.Body, "}") {
+		if result.StatusCode == 200 && strings.HasPrefix(result.Body, "{") && strings.HasSuffix(result.Body, "}") && !strings.Contains(result.Body, ",\"code\":") {
 			p.Success(p.Name, url1, p.Type, p.Desc, "")
 			return
 		}

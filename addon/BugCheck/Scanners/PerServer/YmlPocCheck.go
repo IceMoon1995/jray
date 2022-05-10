@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	Common.AddBugScanListPerFServer(YmlPocCheckScan{Common.PluginBase{Name: "YmlPocCheckScan", Desc: "YmlPocCheckScan", Type: "ServerScan", Level: 1}})
+	Common.AddBugScanListPerFServer(YmlPocCheckScan{Common.PluginBase{Name: "YmlPocCheckScan", Desc: "YmlPocCheckScan", Type: "ServerScan", Level: 2}})
 }
 
 type YmlPocCheckScan struct {

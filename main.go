@@ -23,14 +23,17 @@ func loadConfig() {
 	flag.BoolVar(&common.Version, "version", false, "show version")
 	flag.StringVar(&common.Addr, "addr", "9080", "proxy listen addr")
 	flag.StringVar(&common.WebAddr, "waddr", "9081", "web interface listen addr")
-	flag.BoolVar(&common.Ssl_insecure, "ssl_insecure", true, "not verify upstream server SSL/TLS certificates.")
+	flag.BoolVar(&common.Ssl_insecure, "ssl_insecure", false, "not verify upstream server SSL/TLS certificates.")
 	flag.StringVar(&common.Dump, "dump", "jweb.txt", "dump filename")
 	flag.IntVar(&common.DumpLevel, "dump_level", 1, "dump level: 0 - header, 1 - header + body")
+	flag.IntVar(&common.CheckLevel, "ckeckLevel", 1, "bug检查级别")
+	flag.BoolVar(&common.IsCheck, "nocheck", false, "是否进行扫描，不扫描则只进行")
+
 	flag.StringVar(&common.MapperDir, "mapper_dir", "", "mapper files dirpath")
 	flag.StringVar(&common.CertPath, "cert_path", "", "path of generate cert files")
-	flag.BoolVar(&common.IsSave, "nosave", true, "是否保存扫描结果")
+	flag.BoolVar(&common.IsSave, "nosave", false, "是否保存扫描结果")
 	flag.StringVar(&common.Outputfile, "o", "result_vul.txt", "扫描结果保存的文件名")
-	flag.IntVar(&common.ScanThreads, "t", 16, "扫描并发数")
+	flag.IntVar(&common.ScanThreads, "t", 20, "扫描并发数")
 	flag.StringVar(&common.Proxy, "proxy", "", "上层代理设置 -proxy http://127.0.0.1:8887")
 	flag.BoolVar(&common.IsUseReverse, "re", false, "是否启用反连平台")
 	flag.StringVar(&common.UseReverseType, "ret", "ldap", "反连平台类型:DnsLog,ldap,rmi")
@@ -50,10 +53,14 @@ func loadConfig() {
 				common.IsUseReverse = false
 				println("dig平台未成功连接")
 			} else {
+				println("dig平台成功连接")
+
 				reverse := Common.ReverseMap[common.UseReverseType]
 				reverse.ReverseDomain = digresult["domain"]
 				reverse.DigToken = digresult["token"]
 				reverse.DigKey = digresult["key"]
+				Common.ReverseMap[common.UseReverseType] = reverse
+
 			}
 		}
 
@@ -78,7 +85,7 @@ func main() {
 	opts := &proxy.Options{
 		Addr:              common.Addr,
 		StreamLargeBodies: 1024 * 1024 * 5,
-		SslInsecure:       common.Ssl_insecure,
+		SslInsecure:       !common.Ssl_insecure,
 		CaRootPath:        common.CertPath,
 	}
 
